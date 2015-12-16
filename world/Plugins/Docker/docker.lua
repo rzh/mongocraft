@@ -66,13 +66,17 @@ end
 -- getStartStopLeverContainer returns the container
 -- id that corresponds to lever at x,y coordinates
 function getStartStopLeverContainer(x, z)
+    LOG("Lever address " .. x .. "   " .. z)
 	for i=1, table.getn(Containers)
 	do
+	    LOG("Infor: check mongodb " .. i)
+	    LOG("Container: " .. Containers[i].x .. "  " .. Containers[i].z)
 		if Containers[i] ~= EmptyContainerSpace and x == Containers[i].x + 1 and z == Containers[i].z + 1
 		then
 			return Containers[i].id
 		end
 	end
+	LOG("Warning: failed to find mongodb id for lever")
 	return ""
 end
 
@@ -195,9 +199,9 @@ function PlayerJoined(Player)
 	Player:SetCanFly(true)
 
 	-- refresh containers
-	LOG("player joined")
-	r = os.execute("goproxy containers")
-	LOG("executed: goproxy containers -> " .. tostring(r))
+	LOG("player " .. player .. " joined")
+	-- r = os.execute("goproxy containers")
+	-- LOG("executed: goproxy containers -> " .. tostring(r))
 end
 
 -- 
@@ -217,11 +221,11 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
 			if BlockMeta == 1
 			then
 				Player:SendMessage("docker stop " .. string.sub(containerID,1,8))
-				r = os.execute("goproxy exec?cmd=docker+stop+" .. containerID)
+				-- r = os.execute("goproxy exec?cmd=docker+stop+" .. containerID)
 			-- start
 			else 
 				Player:SendMessage("docker start " .. string.sub(containerID,1,8))
-				os.execute("goproxy exec?cmd=docker+start+" .. containerID)
+				-- os.execute("goproxy exec?cmd=docker+start+" .. containerID)
 			end
 		else
 			LOG("WARNING: no docker container ID attached to this lever")
@@ -238,7 +242,8 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
 			Player:SendMessage("A running container can't be removed.")
 		else 
 			Player:SendMessage("docker rm " .. string.sub(containerID,1,8))
-			os.execute("goproxy exec?cmd=docker+rm+" .. containerID)
+			-- os.execute("goproxy exec?cmd=docker+rm+" .. containerID)
+			destroyContainer(containerID)
 		end
 	end
 end
@@ -278,7 +283,7 @@ function DockerCommand(Split, Player)
 					-- remove '/' at the beginning
 					command = string.sub(EntireCommand, 2, -1)
 					
-					r = os.execute("goproxy exec?cmd=" .. command)
+					-- r = os.execute("goproxy exec?cmd=" .. command)
 
 					LOG("executed: " .. command .. " -> " .. tostring(r))
 				end
