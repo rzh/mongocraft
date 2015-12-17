@@ -158,7 +158,8 @@ function Container:display(running)
 	setBlock(UpdateQueue,self.x+2,GROUND_LEVEL + 3,self.z + 2,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_XM)
 	updateSign(UpdateQueue,self.x+2,GROUND_LEVEL + 3,self.z + 2,"","REMOVE","---->","",2)
 
-	setBlock(UpdateQueue,self.x+2,GROUND_LEVEL+3,self.z+3,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_XM)
+	setBlock(UpdateQueue,self.x+1,GROUND_LEVEL+3,self.z+3,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_XM)
+	setBlock(UpdateQueue,self.x+4,GROUND_LEVEL+2,self.z+3,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_XP)
 
 
 	-- door
