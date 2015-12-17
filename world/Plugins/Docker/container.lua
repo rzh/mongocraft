@@ -95,11 +95,13 @@ function Container:display(running)
 	metaPrimaryColor = E_META_WOOL_LIGHTBLUE
 	metaSecondaryColor = E_META_WOOL_BLUE
 
-	if running == false 
+	if self.id == "2" 
 	then
 		metaPrimaryColor = E_META_WOOL_ORANGE
 		metaSecondaryColor = E_META_WOOL_RED
 	end
+
+	
 
 	self.displayed = true
 	
