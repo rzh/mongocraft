@@ -201,7 +201,7 @@ function PlayerJoined(Player)
 	Player:SetCanFly(true)
 
 	-- refresh containers
-	LOG("player " .. player .. " joined")
+	LOG("player " .. Player .. " joined")
 	-- r = os.execute("goproxy containers")
 	-- LOG("executed: goproxy containers -> " .. tostring(r))
 end
