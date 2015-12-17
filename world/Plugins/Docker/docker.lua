@@ -43,7 +43,7 @@ function Initialize(Plugin)
 	-- make all players admin
 	cRankManager:SetDefaultRank("Admin")
 
-	-- setupPanel()
+	setupPanel()
 
 	
 	LOG("Initialised " .. Plugin:GetName() .. " v." .. Plugin:GetVersion())
