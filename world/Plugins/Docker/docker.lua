@@ -43,6 +43,8 @@ function Initialize(Plugin)
 	-- make all players admin
 	cRankManager:SetDefaultRank("Admin")
 
+	-- setupPanel()
+
 	
 	LOG("Initialised " .. Plugin:GetName() .. " v." .. Plugin:GetVersion())
 
@@ -424,4 +426,8 @@ end
 function OnWeatherChanging(World, Weather)
 	return true, wSunny
 end
+
+-- this is the control panel for the world
+
+
 

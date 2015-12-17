@@ -213,3 +213,71 @@ function Container:addGround()
 		end	
 	end
 end
+
+
+
+
+--
+--
+-- NewContainer returns a Container object,
+-- representation of a Docker container in
+-- the Minecraft world
+function NewPanel()
+	c = {
+			displayed = true, 
+			x = 0, 
+			z = 0, 
+			name="",
+			id="",
+			init=Panel.init,
+			-- setInfos=Panel.setInfos,
+			display=Panel.display,
+			-- addGround=Panel.addGround
+		}
+	return c
+end
+
+Panel = {displayed = true, x = 0, z = 0, name="Panel", id=""}
+
+-- Container:init sets Container's position
+function Panel:init(x,z)
+	self.x = x
+	self.z = z
+	self.displayed = true	
+end
+
+
+-- Panel:display displays all Container's blocks
+function Panel:display()
+
+	metaPrimaryColor = E_META_WOOL_LIGHTBLUE
+	metaSecondaryColor = E_META_WOOL_BLUE
+
+	self.displayed = true
+	
+	for px=self.x, self.x+3
+	do
+	    LOG("Setup control panel wall")
+        setBlock(UpdateQueue,px,GROUND_LEVEL + 1,self.z,E_BLOCK_WOOL,metaPrimaryColor)
+        setBlock(UpdateQueue,px,GROUND_LEVEL + 2,self.z,E_BLOCK_WOOL,metaPrimaryColor)
+        setBlock(UpdateQueue,px,GROUND_LEVEL + 3,self.z,E_BLOCK_WOOL,metaPrimaryColor)
+	end
+
+	-- torch
+	-- setBlock(UpdateQueue,self.x+1,GROUND_LEVEL+3,self.z,E_BLOCK_TORCH,E_META_TORCH_ZP)
+
+	-- new instance button
+
+	-- setBlock(UpdateQueue,self.x+1,GROUND_LEVEL + 3,self.z,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_ZM)
+	-- updateSign(UpdateQueue,self.x+1,GROUND_LEVEL + 3,self.z,"","CREATE","  |","",2)
+
+	-- setBlock(UpdateQueue,self.x+1,GROUND_LEVEL+2,self.z,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_ZM)
+
+end
+
+function setupPanel()
+    p = NewPanel()
+    p:init(0, 0)
+    p:display()
+end
+
