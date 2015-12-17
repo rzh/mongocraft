@@ -239,7 +239,7 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
 	then
 	    -- if this is create instance button
 	    LOG("Clicked button " .. BlockX .. " | " .. BlockZ)
-	    if BlockX == 7 and BlockZ == 4
+	    if BlockX == 7 and BlockZ == 4 - 5
 	    then
 			updateContainer(table.getn(Containers) + 1,"test","","",CONTAINER_CREATED)
         else
