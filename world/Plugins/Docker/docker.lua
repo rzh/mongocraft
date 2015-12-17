@@ -87,7 +87,7 @@ end
 function getRemoveButtonContainer(x, z)
 	for i=1, table.getn(Containers)
 	do
-		if Containers[i] ~= EmptyContainerSpace and x == Containers[i].x + 2 and z == Containers[i].z + 3
+		if Containers[i] ~= EmptyContainerSpace and ( x == Containers[i].x + 2 or (x - 4) == Containers[i].x) and z == Containers[i].z + 3
 		then
 			return Containers[i].id, Containers[i].running
 		end
