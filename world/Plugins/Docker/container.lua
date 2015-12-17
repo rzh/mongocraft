@@ -258,7 +258,7 @@ function Panel:display()
 	for pz=self.z, self.z+2
 	do
 	    LOG("Setup control panel wall")
-        setBlock(UpdateQueue,self.x,GROUND_LEVEL + 1,pz,E_BLOCK_WOOL,metaPrimaryColor)
+        setBlock(UpdateQueue,self.x,GROUND_LEVEL + 5,pz,E_BLOCK_WOOL,metaPrimaryColor)
         -- setBlock(UpdateQueue,self.x,GROUND_LEVEL + 2,pz,E_BLOCK_WOOL,metaPrimaryColor)
         -- setBlock(UpdateQueue,self.x,GROUND_LEVEL + 3,pz,E_BLOCK_WOOL,metaPrimaryColor)
 	end
@@ -267,10 +267,10 @@ function Panel:display()
 	-- setBlock(UpdateQueue,self.x+1,GROUND_LEVEL+3,self.z,E_BLOCK_TORCH,E_META_TORCH_ZP)
 
 	-- new instance button
-	setBlock(UpdateQueue,self.x+1,GROUND_LEVEL + 1,self.z+1,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_XP)
-	updateSign(UpdateQueue,self.x+1,GROUND_LEVEL + 1,self.z+1,"","CREATE","  |","",2)
+	setBlock(UpdateQueue,self.x+1,GROUND_LEVEL + 5,self.z+1,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_XP)
+	updateSign(UpdateQueue,self.x+1,GROUND_LEVEL + 5,self.z+1,"","CREATE","  |","",2)
 
-	setBlock(UpdateQueue,self.x,GROUND_LEVEL+2,self.z+1,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_YP)
+	setBlock(UpdateQueue,self.x,GROUND_LEVEL+6,self.z+1,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_YP)
 
 end
 

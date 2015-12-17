@@ -237,16 +237,18 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
 	-- stone button
 	if BlockType == 77
 	then
-		containerID, running = getRemoveButtonContainer(BlockX,BlockZ)
+	    -- if this is create instance button
+	    LOG("Clicked button " .. BlockX .. " | " .. BlockZ)
+	    if BlockX == 7 and BlockZ == 4
+	    then
+			updateContainer(table.getn(Containers) + 1,"test","","",CONTAINER_CREATED)
+        else
+            containerID, running = getRemoveButtonContainer(BlockX,BlockZ)
 
-		if running
-		then
-			Player:SendMessage("A running container can't be removed.")
-		else 
-			Player:SendMessage("docker rm " .. string.sub(containerID,1,8))
-			-- os.execute("goproxy exec?cmd=docker+rm+" .. containerID)
-			destroyContainer(containerID)
-		end
+                Player:SendMessage("destroy mongod instance " .. string.sub(containerID,1,8))
+                -- os.execute("goproxy exec?cmd=docker+rm+" .. containerID)
+                destroyContainer(containerID)
+        end
 	end
 end
 
