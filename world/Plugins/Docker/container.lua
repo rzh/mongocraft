@@ -255,7 +255,7 @@ function Panel:display()
 
 	self.displayed = true
 	
-	for pz=self.z, self.z+3
+	for pz=self.z, self.z+2
 	do
 	    LOG("Setup control panel wall")
         setBlock(UpdateQueue,self.x,GROUND_LEVEL + 1,pz,E_BLOCK_WOOL,metaPrimaryColor)
