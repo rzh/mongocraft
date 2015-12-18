@@ -16,12 +16,15 @@ function NewContainer()
 			z = 0, 
 			name="",
 			id="",
+			rs="rs1",
 			isPrimary=false,
 			imageRepo="",
 			imageTag="",
 			running=false,
 			init=Container.init,
 			setInfos=Container.setInfos,
+			setRS=Container.setRS,
+			updateMongoState=Container.updateMongoState,
 			destroy=Container.destroy,
 			display=Container.display,
 			updateMemSign=Container.updateMemSign,
@@ -31,13 +34,14 @@ function NewContainer()
 	return c
 end
 
-Container = {displayed = false, isPrimary=false, x = 0, z = 0, name="",id="",imageRepo="",imageTag="",running=false}
+Container = {displayed = false, isPrimary=false, rs="rs1", x = 0, z = 0, name="",id="",imageRepo="",imageTag="",running=false}
 
 -- Container:init sets Container's position
 function Container:init(x,z)
 	self.x = x
 	self.z = z
 	self.displayed = false	
+	self.rs = "rs1"
 end
 
 -- Container:setInfos sets Container's id, name, imageRepo, 
@@ -48,6 +52,19 @@ function Container:setInfos(id,name,imageRepo,imageTag,running)
 	self.imageRepo = imageRepo
 	self.imageTag = imageTag
 	self.running = running
+end
+
+-- Container:setRS Container's id, rsName
+function Container:setRS(rs)
+	self.rs = "rs1"
+end
+
+-- Container:setRS Container's id, rsName
+function Container:updateMongoState(isPrimary)
+    if self.isPrimary ~= isPrimary then
+        self.isPrimary = isPrimary
+        self:display(self.running == CONTAINER_RUNNING)
+    end 
 end
 
 -- Container:destroy removes all blocks of the 
@@ -61,7 +78,7 @@ function Container:destroy(running)
 	World:BroadcastSoundEffect("random.explode", X, Y, Z, 1, 1)
 	World:BroadcastParticleEffect("hugeexplosion",X, Y, Z, 0, 0, 0, 1, 1)
 
-	-- if a block is removed before it's button/lever/sign, that object will drop
+	--- -- if a block is removed before it's button/lever/sign, that object will drop
 	-- and the player can collect it. Remove these first
 
 	-- lever
@@ -96,7 +113,7 @@ function Container:display(running)
 	metaPrimaryColor = E_META_WOOL_LIGHTBLUE
 	metaSecondaryColor = E_META_WOOL_BLUE
 
-	if self.id == "2" or self.id == 2 
+	if self.isPrimary
 	then
 		metaPrimaryColor = E_META_WOOL_ORANGE
 		metaSecondaryColor = E_META_WOOL_RED
@@ -178,8 +195,35 @@ function Container:display(running)
 		end	
 	end
 
+
+    _running = "Not Running"
+	if self.running then
+	    _running = "Is Running"
+    end
+
 	setBlock(UpdateQueue,self.x+3,GROUND_LEVEL + 2,self.z - 1,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_ZM)
-	updateSign(UpdateQueue,self.x+3,GROUND_LEVEL + 2,self.z - 1,string.sub(self.id,1,8),self.name,self.imageRepo,self.imageTag,2)
+	updateSign(UpdateQueue,self.x+3,GROUND_LEVEL + 2,self.z - 1,string.sub(self.id,1,8),"Name: " .. self.name, "RS: " .. self.rs, _running,2)
+
+	-- chest
+	setBlock(UpdateQueue,self.x+1,GROUND_LEVEL + 2,self.z + 2,E_BLOCK_CHEST,E_META_CHEST_FACING_XP)
+    -- w = cRoot:Get():GetDefaultWorld()
+	local w = cRoot:Get():GetDefaultWorld()
+				-- local EntityWithItems = tolua.cast(a_BlockEntity, "cBlockEntityWithItems");
+				-- local ItemGrid = EntityWithItems:GetContents();
+				--
+	-- update check
+	r = w:DoWithChestAt(self.x + 1, GROUND_LEVEL + 2, self.z+2, 
+	    function (a_check)
+	        LOG("--- Update chest ")
+            -- a_check:SetSlot(0, 0,  cItem(E_ITEM_DIAMOND_CHESTPLATE, 1, 0, "thorns=1;unbreaking=3")); 
+        end
+	)
+
+	if r == true then
+        LOG("Update chest return true")
+    else 
+        LOG("Update chest return false")
+    end
 
 	-- Mem sign
 	setBlock(UpdateQueue,self.x,GROUND_LEVEL + 2,self.z - 1,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_ZM)

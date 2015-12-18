@@ -55,7 +55,7 @@ function Panel:display()
 
 	-- new instance button
 	setBlock(UpdateQueue,self.x+1,GROUND_LEVEL + 3,self.z+1-5,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_XP)
-	updateSign(UpdateQueue,self.x+1,GROUND_LEVEL + 3,self.z+1-5,"","CREATE","  |","",2)
+	updateSign(UpdateQueue,self.x+1,GROUND_LEVEL + 3,self.z+1-5,"","Create Instance","","",2)
 
 	setBlock(UpdateQueue,self.x,GROUND_LEVEL+4,self.z+1-5,E_BLOCK_STONE_BUTTON,E_BLOCK_BUTTON_YP)
 

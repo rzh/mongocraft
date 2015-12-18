@@ -36,7 +36,8 @@ function Initialize(Plugin)
 
 	-- Command Bindings
 
-	cPluginManager.BindCommand("/docker", "*", DockerCommand, " - docker CLI commands")
+	-- cPluginManager.BindCommand("/docker", "*", DockerCommand, " - docker CLI commands")
+	cPluginManager.BindCommand("/mongo", "*", MongoCommand, " - mongo CLI commands")
 
 	Plugin:AddWebTab("Docker",HandleRequest_Docker)
 
@@ -106,6 +107,7 @@ function destroyContainer(id)
 		then
 			-- remove the container from the world
 			Containers[i]:destroy()
+			os.execute("/home/vagrant/gosrc/src/mongoproxy/mongoproxy \"killmongo?id=" .. id .. "\&rs=rs1\"")
 			-- if the container being removed is the last element of the array
 			-- we reduce the size of the "Container" array, but if it is not, 
 			-- we store a reference to the "EmptyContainerSpace" object at the
@@ -171,6 +173,7 @@ function updateContainer(id,name,imageRepo,imageTag,state)
 	container:init(x,CONTAINER_START_Z)
 	container:setInfos(id,name,imageRepo,imageTag,state == CONTAINER_RUNNING)
 	container:addGround()
+	container:setRS(rs)
 	container:display(state == CONTAINER_RUNNING)
 
 	if index == -1
@@ -222,25 +225,27 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
 			-- stop
 			if BlockMeta == 1
 			then
-				Player:SendMessage("docker stop " .. string.sub(containerID,1,8))
+				Player:SendMessage("stop mongod" .. string.sub(containerID,1,8))
 				-- r = os.execute("goproxy exec?cmd=docker+stop+" .. containerID)
 			-- start
 			else 
-				Player:SendMessage("docker start " .. string.sub(containerID,1,8))
+				Player:SendMessage("start mongod" .. string.sub(containerID,1,8))
 				-- os.execute("goproxy exec?cmd=docker+start+" .. containerID)
+                -- os.execute("/home/vagrant/gosrc/src/mongoproxy/mongoproxy \"newmongo?id=" .. table.getn(Containers)+1 .. "\&rs=rs1\"")
 			end
 		else
 			LOG("WARNING: no docker container ID attached to this lever")
 		end
 	end
 
-	-- stone button
+	-- stone buttoe
 	if BlockType == 77
 	then
 	    -- if this is create instance button
 	    LOG("Clicked button " .. BlockX .. " | " .. BlockZ)
 	    if BlockX == 7 and BlockZ == 4 - 5
 	    then
+			os.execute("/home/vagrant/gosrc/src/mongoproxy/mongoproxy \"newmongo?id=" .. table.getn(Containers)+1 .. "\&rs=rs1\"")
 			updateContainer(table.getn(Containers) + 1,"test","","",CONTAINER_CREATED)
         else
             containerID, running = getRemoveButtonContainer(BlockX,BlockZ)
@@ -352,6 +357,35 @@ function HandleRequest_Docker(Request)
 			id = Request.PostParams["id"]
 
 			updateContainer(id,name,imageRepo,imageTag,CONTAINER_CREATED)
+		end
+
+		if action == "updateMongoStatus"
+		then
+			-- LOG("EVENT - updateMongoStatus")
+
+			name = Request.PostParams["name"]
+			rs = Request.PostParams["rs"]
+			id = Request.PostParams["id"]
+			isPrimary = Request.PostParams["isPrimary"]
+
+            for i=1, table.getn(Containers)
+            do
+                -- if container found with same ID, we update it
+                if Containers[i] ~= EmptyContainerSpace and ( Containers[i].id == id or Containers[i].id .. "" == id)
+                then
+                    Containers[i]:setInfos(id,name,imageRepo,imageTag,true)
+                    Containers[i]:updateMongoState(isPrimary == "true" or isPrimary == true)
+                    Containers[i]:display(state == CONTAINER_RUNNING)
+
+                    LOG("Update status for " .. id )
+                    content = content .. "{action:\"" .. action .. "\"}"
+                    content = content .. "[/dockerclient]"
+                    return content
+                end
+            end
+            content = content .. "{error:\"action requested\"}"
+            content = content .. "[/dockerclient]"
+            return content
 		end
 
 		if action == "stopContainer"
