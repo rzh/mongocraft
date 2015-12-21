@@ -17,7 +17,7 @@ end
 
 -- Plugin initialization
 function Initialize(Plugin)
-	Plugin:SetName("Docker")
+	Plugin:SetName("MongoDB")
 	Plugin:SetVersion(1)
 
 	UpdateQueue = NewUpdateQueue()
@@ -36,10 +36,9 @@ function Initialize(Plugin)
 
 	-- Command Bindings
 
-	-- cPluginManager.BindCommand("/docker", "*", DockerCommand, " - docker CLI commands")
 	cPluginManager.BindCommand("/mongo", "*", MongoCommand, " - mongo CLI commands")
 
-	Plugin:AddWebTab("Docker",HandleRequest_Docker)
+	Plugin:AddWebTab("MongoDB",HandleRequest_MongoDB)
 
 	-- make all players admin
 	cRankManager:SetDefaultRank("Admin")
@@ -226,15 +225,12 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
 			if BlockMeta == 1
 			then
 				Player:SendMessage("stop mongod" .. string.sub(containerID,1,8))
-				-- r = os.execute("goproxy exec?cmd=docker+stop+" .. containerID)
 			-- start
 			else 
 				Player:SendMessage("start mongod" .. string.sub(containerID,1,8))
-				-- os.execute("goproxy exec?cmd=docker+start+" .. containerID)
-                -- os.execute("/home/vagrant/gosrc/src/mongoproxy/mongoproxy \"newmongo?id=" .. table.getn(Containers)+1 .. "\&rs=rs1\"")
 			end
 		else
-			LOG("WARNING: no docker container ID attached to this lever")
+			LOG("WARNING: no ID attached to this lever")
 		end
 	end
 
@@ -251,7 +247,6 @@ function PlayerUsingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, Cu
             containerID, running = getRemoveButtonContainer(BlockX,BlockZ)
 
                 Player:SendMessage("destroy mongod instance " .. string.sub(containerID,1,8))
-                -- os.execute("goproxy exec?cmd=docker+rm+" .. containerID)
                 destroyContainer(containerID)
         end
 	end
@@ -269,45 +264,9 @@ function OnChunkGenerating(World, ChunkX, ChunkZ, ChunkDesc)
 end
 
 
-function DockerCommand(Split, Player)
-
-	if table.getn(Split) > 0
-	then
-
-		LOG("Split[1]: " .. Split[1])
-
-		if Split[1] == "/docker"
-		then
-			if table.getn(Split) > 1
-			then
-				if Split[2] == "pull" or Split[2] == "create" or Split[2] == "run" or Split[2] == "stop" or Split[2] == "rm" or Split[2] == "rmi" or Split[2] == "start" or Split[2] == "kill"
-				then
-					-- force detach when running a container
-					if Split[2] == "run"
-					then
-						table.insert(Split,3,"-d")
-					end
-
-					EntireCommand = table.concat(Split, "+")
-					-- remove '/' at the beginning
-					command = string.sub(EntireCommand, 2, -1)
-					
-					-- r = os.execute("goproxy exec?cmd=" .. command)
-
-					LOG("executed: " .. command .. " -> " .. tostring(r))
-				end
-			end
-		end
-	end
-
-	return true
-end
-
-
-
-function HandleRequest_Docker(Request)
+function HandleRequest_MongoDB(Request)
 	
-	content = "[dockerclient]"
+	content = "[mongoclient]"
 
 	if Request.PostParams["action"] ~= nil then
 
@@ -367,6 +326,9 @@ function HandleRequest_Docker(Request)
 			rs = Request.PostParams["rs"]
 			id = Request.PostParams["id"]
 			isPrimary = Request.PostParams["isPrimary"]
+			connections = Request.PostParams["connection"]
+
+			LOG("Connection: " .. connections)
 
             for i=1, table.getn(Containers)
             do
@@ -374,17 +336,17 @@ function HandleRequest_Docker(Request)
                 if Containers[i] ~= EmptyContainerSpace and ( Containers[i].id == id or Containers[i].id .. "" == id)
                 then
                     Containers[i]:setInfos(id,name,imageRepo,imageTag,true)
-                    Containers[i]:updateMongoState(isPrimary == "true" or isPrimary == true)
+                    Containers[i]:updateMongoState(isPrimary == "true" or isPrimary == true, connections)
                     Containers[i]:display(state == CONTAINER_RUNNING)
 
                     LOG("Update status for " .. id )
                     content = content .. "{action:\"" .. action .. "\"}"
-                    content = content .. "[/dockerclient]"
+                    content = content .. "[/mongoclient]"
                     return content
                 end
             end
             content = content .. "{error:\"action requested\"}"
-            content = content .. "[/dockerclient]"
+            content = content .. "[/mongoclient]"
             return content
 		end
 
@@ -424,7 +386,7 @@ function HandleRequest_Docker(Request)
 
 	end
 
-	content = content .. "[/dockerclient]"
+	content = content .. "[/mongoclient]"
 
 	return content
 end
@@ -447,7 +409,7 @@ end
 
 function OnServerPing(ClientHandle, ServerDescription, OnlinePlayers, MaxPlayers, Favicon)
 	-- Change Server Description
-	ServerDescription = "A Docker client for Minecraft"
+	ServerDescription = "A MongoDB client for Minecraft"
 	-- Change favicon
 	if cFile:IsFile("/srv/logo.png") then
 		local FaviconData = cFile:ReadWholeFile("/srv/logo.png")

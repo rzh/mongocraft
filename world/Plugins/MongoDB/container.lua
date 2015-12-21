@@ -19,6 +19,7 @@ function NewContainer()
 			rs="rs1",
 			isPrimary=false,
 			imageRepo="",
+			connections = "",
 			imageTag="",
 			running=false,
 			init=Container.init,
@@ -34,7 +35,7 @@ function NewContainer()
 	return c
 end
 
-Container = {displayed = false, isPrimary=false, rs="rs1", x = 0, z = 0, name="",id="",imageRepo="",imageTag="",running=false}
+Container = {displayed = false, isPrimary=false, rs="rs1", x = 0, z = 0, connections="0", name="",id="",imageRepo="",imageTag="",running=false}
 
 -- Container:init sets Container's position
 function Container:init(x,z)
@@ -42,6 +43,7 @@ function Container:init(x,z)
 	self.z = z
 	self.displayed = false	
 	self.rs = "rs1"
+	self.connections = "0"
 end
 
 -- Container:setInfos sets Container's id, name, imageRepo, 
@@ -60,11 +62,14 @@ function Container:setRS(rs)
 end
 
 -- Container:setRS Container's id, rsName
-function Container:updateMongoState(isPrimary)
+function Container:updateMongoState(isPrimary, connections)
+    if connections ~= nil then
+        self.connections = connections
+    end
     if self.isPrimary ~= isPrimary then
         self.isPrimary = isPrimary
-        self:display(self.running == CONTAINER_RUNNING)
     end 
+    self:display(self.running == CONTAINER_RUNNING)
 end
 
 -- Container:destroy removes all blocks of the 
@@ -202,7 +207,7 @@ function Container:display(running)
     end
 
 	setBlock(UpdateQueue,self.x+3,GROUND_LEVEL + 2,self.z - 1,E_BLOCK_WALLSIGN,E_META_CHEST_FACING_ZM)
-	updateSign(UpdateQueue,self.x+3,GROUND_LEVEL + 2,self.z - 1,string.sub(self.id,1,8),"Name: " .. self.name, "RS: " .. self.rs, _running,2)
+	updateSign(UpdateQueue,self.x+3,GROUND_LEVEL + 2,self.z - 1,"id: " .. string.sub(self.id,1,8),"Connection: " .. self.connections, "RS: " .. self.rs, _running,2)
 
 	-- chest
 	setBlock(UpdateQueue,self.x+1,GROUND_LEVEL + 2,self.z + 2,E_BLOCK_CHEST,E_META_CHEST_FACING_XP)
