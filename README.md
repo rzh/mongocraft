@@ -18,5 +18,7 @@ go get github.com/rzh/mongocraft/go/src/mongoproxy
 mongoproxy
 </pre>
 
+This assume your mongodb binary installed under ```~/mongodb/bin```
+
 The original README file is here https://github.com/rzh/mongocraft/blob/master/dockercraft-README.md
 
