@@ -1,10 +1,10 @@
 # mongocraft
 
-This enable you build a MongoDB cluster from minecraft, inspired by Dockercraft. 
+Build a MongoDB cluster from minecraft, inspired by Dockercraft. This is a Hackathon project
 
 # How to 
 
-You need install Cuberite minecraft server, then
+You need install Cuberite minecraft server (http://cuberite.org/), then
 
 <pre>
 cd ./world
